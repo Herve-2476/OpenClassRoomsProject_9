@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>LITReview</title>
+    <link rel="shortcut icon" type="image/png" href='{% static "images/favicon.png" %}' />
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <p>vous êtes connecté en tant que {{ user }}</p>
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
+</body>
+
+
+</html>
