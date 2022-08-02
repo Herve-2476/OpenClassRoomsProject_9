@@ -7,14 +7,23 @@
     <title>LITReview</title>
     <link rel="shortcut icon" type="image/png" href='{% static "images/favicon.png" %}' />
 </head>
+{% if user.is_authenticated %}
+<header>
+    <ul>
+        <li><a href='{% url "flux" %}'>Flux</a></li>
+        <li><a href='{% url "subscriptions" %}'>Abonnements</a></li>
+        <li><a href='{% url "logout" %}'>Se déconnecter</a></li>
+    </ul>
+</header>
 
 <body>
-    {% if user.is_authenticated %}
+
     <p>vous êtes connecté en tant que {{ user }}</p>
     {% endif %}
     {% block content %}
-    {% endblock content %}
+
 </body>
+{% endblock content %}
 
 
 </html>

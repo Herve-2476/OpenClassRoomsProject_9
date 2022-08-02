@@ -26,7 +26,9 @@ class Review(models.Model):
 
 class UserFollows(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="following")
-    followed_user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="followed_by")
+    followed_user = models.ForeignKey(
+        verbose_name="Utilisateurs suivis", to=User, on_delete=models.CASCADE, related_name="followed_by"
+    )
 
     class Meta:
         # ensures we don't get multiple UserFollows instances
