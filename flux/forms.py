@@ -24,9 +24,18 @@ class UserFollowsForm(forms.Form):
             raise ValidationError((f"L'utilisateur {new_followed_user} n'existe pas"))
 
 
-class UnsubscribeForm(forms.ModelForm):
-    unsubscribe_tag = forms.BooleanField(widget=forms.HiddenInput, initial=True)
-
+class TicketCreateForm(forms.ModelForm):
     class Meta:
-        model = models.UserFollows
-        fields = []
+        model = models.Ticket
+        exclude = ["user"]
+
+
+class ReviewCreateForm(forms.ModelForm):
+    class Meta:
+        model = models.Review
+        exclude = ["user", "ticket"]
+        choices = ((i, str(i)) for i in range(6))
+        widgets = {
+            "body": forms.Textarea(attrs={"cols": 80, "rows": 20}),
+            "rating": forms.RadioSelect(choices=choices),
+        }

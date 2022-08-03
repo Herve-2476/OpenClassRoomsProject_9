@@ -1,3 +1,5 @@
+from itertools import chain
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
@@ -37,3 +39,51 @@ def subscriptions(request):
 def subscription_delete(request, id_subscription):
     models.UserFollows.objects.get(id=id_subscription).delete()
     return redirect("subscriptions")
+
+
+@login_required
+def ticket_create(request):
+    form = forms.TicketCreateForm()
+    if request.method == "POST":
+        form = forms.TicketCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            return redirect("flux")
+
+    return render(request, "flux/ticket_create.html", context={"form": form})
+
+
+@login_required
+def ticket_review_create(request):
+    form_ticket = forms.TicketCreateForm()
+    form_review = forms.ReviewCreateForm()
+    if request.method == "POST":
+        form_ticket = forms.TicketCreateForm(request.POST, request.FILES)
+        form_review = forms.ReviewCreateForm(request.POST)
+        if form_ticket.is_valid() and form_review.is_valid():
+            ticket = form_ticket.save(commit=False)
+            review = form_review.save(commit=False)
+            ticket.user = request.user
+            review.user = request.user
+            ticket.save()
+            review.ticket = ticket
+            review.save()
+            return redirect("flux")
+
+    context = {"form_ticket": form_ticket, "form_review": form_review}
+    return render(request, "flux/ticket_review_create.html", context=context)
+
+
+@login_required
+def posts(request):
+    user = request.user
+    tickets = models.Ticket.objects.filter(user=user)
+    reviews = models.Review.objects.filter(user=user)
+    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
+    paginator = Paginator(posts, 6)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {"page_obj": page_obj}
+    return render(request, "flux/posts.html", context=context)
