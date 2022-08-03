@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
+from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
-from . import forms
+from django.db.models import Q
+from . import forms, models
+from authentication.models import User
 
 
 @login_required
@@ -11,13 +14,26 @@ def flux_page(request):
 
 @login_required
 def subscriptions(request):
-
-    if request.method == "POST":
-        form = forms.UserFollowsForm(request.POST)
-        if form.is_valid():
-            user_follows = form.save(commit=False)
-            user_follows.user = request.user
-            form.save()
-
     form = forms.UserFollowsForm()
-    return render(request, "flux/subscriptions.html", context={"form": form})
+    if request.method == "POST":
+
+        form = forms.UserFollowsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            new_followed_user = request.POST["username"]
+            new_followed_user = User.objects.get(username=new_followed_user)
+            models.UserFollows(user=request.user, followed_user=new_followed_user).save()
+
+    followed_users = models.UserFollows.objects.filter(user=request.user)
+    subscripters = models.UserFollows.objects.filter(followed_user=request.user)
+
+    return render(
+        request,
+        "flux/subscriptions.html",
+        context={"form": form, "followed_users": followed_users, "subscripters": subscripters},
+    )
+
+
+@login_required
+def subscription_delete(request, id_subscription):
+    models.UserFollows.objects.get(id=id_subscription).delete()
+    return redirect("subscriptions")

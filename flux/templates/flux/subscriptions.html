@@ -3,9 +3,25 @@
 {% block content %}
 <h1>Page d'affichage des abonnements</h1>
 <form method="post">
-    {{ form.as_p }}
     {% csrf_token %}
-    <button type="submit">Envoyer</button>
+    {{ form }}
+    <input type="submit" value="Envoyer">
 </form>
-
+<ul>
+    <h1>Abonnements</h1>
+    <form method="post">
+        {{ followed_users.as_p }}
+        {% csrf_token %}
+        {% for followed_user in followed_users %}
+        <li>{{ followed_user.followed_user }} <button><a
+                    href="{% url 'subscription_delete' followed_user.id %}">Désabonner</a></button></li>
+        {% endfor %}
+    </form>
+</ul>
+<ul>
+    <h1>Abonnés</h1>
+    {% for subscripter in subscripters %}
+    <li>{{ subscripter.user }}</li>
+    {% endfor %}
+</ul>
 {% endblock content %}
