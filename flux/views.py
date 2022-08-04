@@ -8,8 +8,34 @@ from . import forms, models
 from authentication.models import User
 
 
+def followed_users(user):
+    users = [user.id]
+    return users + [user.followed_user for user in models.UserFollows.objects.filter(user=user.id)]
+
+
+def get_users_viewable_reviews(user):
+    users = followed_users(user)
+    reviews = []
+    for user in users:
+        reviews = chain(reviews, models.Review.objects.filter(user=user))
+    return reviews
+
+
+def get_users_viewable_tickets(user):
+    users = followed_users(user)
+    tickets = []
+    for user in users:
+        tickets = chain(tickets, models.Ticket.objects.filter(user=user))
+    return tickets
+
+
 @login_required
 def flux_page(request):
+    reviews = get_users_viewable_reviews(request.user)
+    tickets = get_users_viewable_tickets(request.user)
+
+    for obj in chain(reviews, tickets):
+        print(obj.user)
 
     return render(request, "flux/flux.html")
 
