@@ -18,7 +18,11 @@ def get_users_viewable_reviews(user):
     reviews = []
     for user in users:
         reviews = chain(reviews, models.Review.objects.filter(user=user))
-    return reviews
+    reviews_ticket = {}
+    for review in reviews:
+        reviews_ticket[review.ticket.id] = review
+
+    return reviews_ticket
 
 
 def get_users_viewable_tickets(user):
@@ -31,13 +35,36 @@ def get_users_viewable_tickets(user):
 
 @login_required
 def flux_page(request):
-    reviews = get_users_viewable_reviews(request.user)
+    reviews_ticket = get_users_viewable_reviews(request.user)
     tickets = get_users_viewable_tickets(request.user)
+    posts = []
+    for ticket in tickets:
+        if ticket.id in reviews_ticket:
+            ticket_review = {
+                "date": reviews_ticket[ticket.id].time_created,
+                "ticket": ticket,
+                "review": reviews_ticket[ticket.id],
+            }
+        else:
 
-    for obj in chain(reviews, tickets):
-        print(obj.user)
+            try:
+                is_with_review = True
+                ticket_with_rewiew = models.Review.objects.get(ticket=ticket)
 
-    return render(request, "flux/flux.html")
+            except:
+                is_with_review = False
+
+            ticket_review = {"date": ticket.time_created, "ticket": ticket, "ticket_with_review": is_with_review}
+        posts.append(ticket_review)
+
+    posts = sorted(posts, key=lambda instance: instance["date"], reverse=True)
+
+    paginator = Paginator(posts, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {"page_obj": page_obj}
+
+    return render(request, "flux/flux.html", context=context)
 
 
 @login_required
@@ -65,6 +92,22 @@ def subscriptions(request):
 def subscription_delete(request, id_subscription):
     models.UserFollows.objects.get(id=id_subscription).delete()
     return redirect("subscriptions")
+
+
+@login_required
+def review_create(request, id_ticket):
+    form = forms.ReviewCreateForm()
+    if request.method == "POST":
+        form = forms.ReviewCreateForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.ticket = models.Ticket.objects.get(id=id_ticket)
+            review.save()
+            return redirect("flux")
+    ticket = models.Ticket.objects.get(id=id_ticket)
+    context = {"form": form, "ticket": ticket}
+    return render(request, "flux/review_create.html", context=context)
 
 
 @login_required

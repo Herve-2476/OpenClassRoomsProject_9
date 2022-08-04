@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Page de création de critique</h1>
+<p>Vous êtes en train de poster en réponse à :</p>
+<p>{{ ticket.user }} a demandé une critique</p>
+<p>{{ ticket.date|date:"H:i, d F Y" }}</p> 
+<p>{{ ticket.title }}</p>
+<p>{{ ticket.description }}</p>
+{% if ticket.image %}
+    <img src="{{ post.ticket.image.url }}"/>
+{% endif %} 
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Envoyer">
+
+</form>
+{% endblock content %}

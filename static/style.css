@@ -1,0 +1,12 @@
+.grid-container {
+    display: flex;
+}
+
+
+.grid {
+    display: block;
+}
+
+li {
+    display: inline;
+}

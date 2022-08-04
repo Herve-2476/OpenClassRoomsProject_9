@@ -6,10 +6,12 @@
 <head>
     <title>LITReview</title>
     <link rel="shortcut icon" type="image/png" href='{% static "images/favicon.png" %}' />
+    <link href="{% static 'style.css' %}" rel = "stylesheet" type="text/css"/>
+
 </head>
 {% if user.is_authenticated %}
 <header>
-    <ul>
+    <ul >
         <li><a href='{% url "flux" %}'>Flux</a></li>
         <li><a href='{% url "posts" %}'>Posts</a></li>
         <li><a href='{% url "subscriptions" %}'>Abonnements</a></li>
@@ -21,10 +23,13 @@
 
     <p>vous êtes connecté en tant que {{ user }}</p>
     {% endif %}
+    
     {% block content %}
+    {% endblock content %}
+    
 
 </body>
-{% endblock content %}
+
 
 
 </html>
