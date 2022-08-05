@@ -1,3 +1,5 @@
+from time import strftime
+import locale
 from django import template
 from django.utils import timezone
 
@@ -46,3 +48,10 @@ def get_poster_display(
 @register.filter
 def return_list(n):
     return range(n)
+
+
+@register.filter
+def my_date(date):
+    # "%H:%i, %d %F %Y"
+
+    return date.strftime("%H:%M, %d %B %Y")

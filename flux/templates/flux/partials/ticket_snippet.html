@@ -1,0 +1,7 @@
+{% load flux_extras %}
+<p>{{ instance.time_created|my_date }}</p>
+<p>{{ instance.title }}</p>
+<p>{{ instance.description }}</p>
+{% if instance.image %}
+    <img src="{{ instance.image.url }}"/>
+{% endif %}
