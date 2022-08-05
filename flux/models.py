@@ -15,14 +15,16 @@ class Ticket(models.Model):
     IMAGE_MAX_SIZE = (800, 800)
 
     def resize_image(self):
+
         image = Image.open(self.image)
         image.thumbnail(self.IMAGE_MAX_SIZE)
         image.save(self.image.path)
+        print("image réduite sauvegardée")
 
     def save(self, *args, **kwargs):
+        image_resize = kwargs.pop("image_resize", True)
         super().save(*args, **kwargs)
-        print("ok=", type(self.image))
-        if self.image:
+        if image_resize and self.image:
             self.resize_image()
 
 

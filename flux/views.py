@@ -1,4 +1,5 @@
 from itertools import chain
+from django.db.models import Case, Value, When, CharField, BooleanField
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.forms import modelformset_factory
@@ -8,58 +9,37 @@ from . import forms, models
 from authentication.models import User
 
 
-def followed_users(user):
-    users = [user.id]
-    return users + [user.followed_user for user in models.UserFollows.objects.filter(user=user.id)]
-
-
-def get_users_viewable_reviews(user):
-    users = followed_users(user)
-    reviews = []
-    for user in users:
-        reviews = chain(reviews, models.Review.objects.filter(user=user))
-    reviews_ticket = {}
-    for review in reviews:
-        reviews_ticket[review.ticket.id] = review
-
-    return reviews_ticket
-
-
-def get_users_viewable_tickets(user):
-    users = followed_users(user)
-    tickets = []
-    for user in users:
-        tickets = chain(tickets, models.Ticket.objects.filter(user=user))
-    return tickets
-
-
 @login_required
 def flux_page(request):
-    reviews_ticket = get_users_viewable_reviews(request.user)
-    tickets = get_users_viewable_tickets(request.user)
-    posts = []
+
+    user = request.user
+    followed_users = models.UserFollows.objects.filter(user=user)
+    followed_users = [user] + [user.followed_user for user in followed_users]
+    # we retrieve all the tickets of the user and of the followed users
+    tickets = models.Ticket.objects.filter(user__in=followed_users).annotate(
+        ticket_with_review=Value(False, BooleanField())
+    )
+
+    # we keep only the tickets without review or with review if the author of the ticket is not the one of the review
+    tickets = [
+        ticket
+        for ticket in tickets
+        if ticket.review_set.all().count() == 0
+        or (ticket.review_set.all().count() == 1 and ticket.user != ticket.review_set.all()[0].user)
+    ]
+
+    # we mark the ticket if there is or not a rewiew associated
     for ticket in tickets:
-        if ticket.id in reviews_ticket:
-            ticket_review = {
-                "date": reviews_ticket[ticket.id].time_created,
-                "ticket": ticket,
-                "review": reviews_ticket[ticket.id],
-            }
-        else:
+        if ticket.review_set.all().count() == 1:
+            ticket.ticket_with_review = True
+            ticket.save(image_resize=False)
+    # we retrieve all the tickets of the user and of the followed users
+    reviews = models.Review.objects.all()
+    reviews = [review for review in reviews if review.user in followed_users or (review.ticket.user == user)]
 
-            try:
-                is_with_review = True
-                ticket_with_rewiew = models.Review.objects.get(ticket=ticket)
+    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
 
-            except:
-                is_with_review = False
-
-            ticket_review = {"date": ticket.time_created, "ticket": ticket, "ticket_with_review": is_with_review}
-        posts.append(ticket_review)
-
-    posts = sorted(posts, key=lambda instance: instance["date"], reverse=True)
-
-    paginator = Paginator(posts, 5)
+    paginator = Paginator(posts, 6)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context = {"page_obj": page_obj}

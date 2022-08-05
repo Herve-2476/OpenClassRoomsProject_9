@@ -5,45 +5,25 @@
 <a href="{% url 'ticket_create' %}">Créer un ticket</a>
 <a href="{% url 'ticket_review_create' %}">Créer une critique</a>
 <div class="grid-container">
-    {% for post in page_obj %}
+    {% for instance in page_obj %}
         <div class="grid">
-        <p>#################################</p>
-        {% if post.review %}
-            <p>{% get_poster_display_verb post.review.user %} publié une critique</p>
-            <p>{{ post.date|date:"H:i, d F Y" }}</p>
-            <p>{{ post.review.headline }}</p>
-            {%for i in post.review.rating|return_list %}
-                <span>&#x2605;</span>
-            {% endfor %}
-            <p>{{ post.review.body }}</p>
-            <p>Ticket - {% get_poster_display post.ticket.user %}</p>
-            <p>{{ post.ticket.title }}</p>
-            <p>{{ post.ticket.description }}</p>
-            {% if post.ticket.image %}
-                <img src="{{ post.ticket.image.url }}"/>
-            {% endif %}      
+            {% if instance|model_type == 'Ticket' %}
+                <h2>Ticket</h2>
+                <p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
+                {% include 'flux/partials/ticket_snippet.html' %}
+                {% if not instance.ticket_with_review %}
+                    <a href="{% url 'review_create' instance.id  %}">Créer une critique</a>
+                {% endif %} 
 
-
-        {% elif post.ticket_with_review %}
-            <p>{% get_poster_display_verb post.ticket.user %} demandé une critique</p>
-            <p>{{ post.date|date:"H:i, d F Y" }}</p>
-            <p>{{ post.ticket.title }}</p>
-            <p>{{ post.ticket.description }}</p>
-            {% if post.ticket.image %}
-                <img src="{{ post.ticket.image.url }}"/>
-            {% endif %}  
-        {% else %}
-            <p>{% get_poster_display_verb post.ticket.user %} demandé une critique</p>
-            <p>{{ post.date|date:"H:i, d F Y" }}</p>
-            <p>{{ post.ticket.title }}</p>
-            <p>{{ post.ticket.description }}</p>
-            {% if post.ticket.image %}
-                <img src="{{ post.ticket.image.url }}"/>
+            {% elif instance|model_type == 'Review' %}
+                <h2>Critique</h2>
+                <p>{% get_poster_display_verb instance.user %} publié une critique</p>
+                {% include 'flux/partials/review_snippet.html' %}
+                
+                
             {% endif %}
-            {% if post.ticket.user != user %}
-                <a href="{% url 'review_create' post.ticket.id  %}">Créer une critique</a>
-            {% endif %}     
-        {% endif %}
+
+
         </div>
 
     {% endfor %} 
