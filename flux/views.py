@@ -10,6 +10,33 @@ from authentication.models import User
 
 
 @login_required
+def subscriptions(request):
+    form = forms.UserFollowsForm()
+    if request.method == "POST":
+
+        form = forms.UserFollowsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            new_followed_user = request.POST["username"]
+            new_followed_user = User.objects.get(username=new_followed_user)
+            models.UserFollows(user=request.user, followed_user=new_followed_user).save()
+
+    followed_users = models.UserFollows.objects.filter(user=request.user)
+    subscripters = models.UserFollows.objects.filter(followed_user=request.user)
+
+    return render(
+        request,
+        "flux/subscriptions.html",
+        context={"form": form, "followed_users": followed_users, "subscripters": subscripters},
+    )
+
+
+@login_required
+def subscription_delete(request, id_subscription):
+    models.UserFollows.objects.get(id=id_subscription).delete()
+    return redirect("subscriptions")
+
+
+@login_required
 def flux_page(request):
 
     user = request.user
@@ -48,30 +75,58 @@ def flux_page(request):
 
 
 @login_required
-def subscriptions(request):
-    form = forms.UserFollowsForm()
-    if request.method == "POST":
-
-        form = forms.UserFollowsForm(request.POST, instance=request.user)
-        if form.is_valid():
-            new_followed_user = request.POST["username"]
-            new_followed_user = User.objects.get(username=new_followed_user)
-            models.UserFollows(user=request.user, followed_user=new_followed_user).save()
-
-    followed_users = models.UserFollows.objects.filter(user=request.user)
-    subscripters = models.UserFollows.objects.filter(followed_user=request.user)
-
-    return render(
-        request,
-        "flux/subscriptions.html",
-        context={"form": form, "followed_users": followed_users, "subscripters": subscripters},
-    )
+def posts(request):
+    user = request.user
+    tickets = models.Ticket.objects.filter(user=user)
+    # we keep only the tickets without review or if the user is author of both the ticket and the review
+    tickets = [
+        ticket for ticket in tickets if ticket.review_set.all().count() == 0 or user == ticket.review_set.all()[0].user
+    ]
+    reviews = models.Review.objects.filter(user=user)
+    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
+    paginator = Paginator(posts, 6)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {"page_obj": page_obj}
+    return render(request, "flux/posts.html", context=context)
 
 
 @login_required
-def subscription_delete(request, id_subscription):
-    models.UserFollows.objects.get(id=id_subscription).delete()
-    return redirect("subscriptions")
+def ticket_create(request):
+    form = forms.TicketCreateForm()
+    if request.method == "POST":
+        form = forms.TicketCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            return redirect("flux")
+
+    return render(request, "flux/ticket_create.html", context={"form": form})
+
+
+@login_required
+def ticket_modify(request, id_ticket):
+    ticket = models.Ticket.objects.get(id=id_ticket)
+    form = forms.TicketCreateForm(instance=ticket)
+    if request.method == "POST":
+        form = forms.TicketCreateForm(request.POST, request.FILES, instance=ticket)
+        if form.is_valid():
+            form.save()
+            return redirect("posts")
+
+    return render(request, "flux/ticket_modify.html", context={"form": form})
+
+
+@login_required
+def ticket_delete(request, id_ticket):
+    instance = models.Ticket.objects.get(id=id_ticket)
+    old_image = instance.image
+
+    if request.method == "POST":
+        instance.delete(old_image=old_image)
+        return redirect("posts")
+    return render(request, "flux/ticket_delete.html", {"instance": instance})
 
 
 @login_required
@@ -91,17 +146,25 @@ def review_create(request, id_ticket):
 
 
 @login_required
-def ticket_create(request):
-    form = forms.TicketCreateForm()
+def review_modify(request, id_review):
+    review = models.Review.objects.get(id=id_review)
+    form = forms.ReviewCreateForm(instance=review)
     if request.method == "POST":
-        form = forms.TicketCreateForm(request.POST, request.FILES)
+        form = forms.ReviewCreateForm(request.POST, request.FILES, instance=review)
         if form.is_valid():
-            ticket = form.save(commit=False)
-            ticket.user = request.user
-            ticket.save()
-            return redirect("flux")
+            form.save()
+            return redirect("posts")
 
-    return render(request, "flux/ticket_create.html", context={"form": form})
+    return render(request, "flux/review_modify.html", context={"form": form})
+
+
+@login_required
+def review_delete(request, id_review):
+    instance = models.Review.objects.get(id=id_review)
+    if request.method == "POST":
+        instance.delete()
+        return redirect("posts")
+    return render(request, "flux/review_delete.html", {"instance": instance})
 
 
 @login_required
@@ -123,20 +186,3 @@ def ticket_review_create(request):
 
     context = {"form_ticket": form_ticket, "form_review": form_review}
     return render(request, "flux/ticket_review_create.html", context=context)
-
-
-@login_required
-def posts(request):
-    user = request.user
-    tickets = models.Ticket.objects.filter(user=user)
-    # we keep only the tickets without review or if the user is author of both the ticket and the review
-    tickets = [
-        ticket for ticket in tickets if ticket.review_set.all().count() == 0 or user == ticket.review_set.all()[0].user
-    ]
-    reviews = models.Review.objects.filter(user=user)
-    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
-    paginator = Paginator(posts, 6)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    context = {"page_obj": page_obj}
-    return render(request, "flux/posts.html", context=context)

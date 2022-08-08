@@ -9,14 +9,14 @@
             <h2>Ticket</h2>
             <p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
             {% include 'flux/partials/ticket_snippet.html' %}
-            <button><a href="{}">Modifier</a></button>
-            <button><a href="{}">Supprimer</a></button>
+            <button><a href="{% url 'ticket_modify' instance.id %}">Modifier</a></button>
+            <button><a href="{% url 'ticket_delete' instance.id %}">Supprimer</a></button>
         {% elif instance|model_type == 'Review' %}
             <h2>Critique</h2>
             <p>{% get_poster_display_verb instance.user %} publié une critique</p>
             {% include 'flux/partials/review_snippet.html' %}
-            <button><a href="{}">Modifier</a></button>
-            <button><a href="{}">Supprimer</a></button>
+            <button><a href="{% url 'review_modify' instance.id %}">Modifier</a></button>
+            <button><a href="{% url 'review_delete' instance.id %}">Supprimer</a></button>
             
         {% endif %}
     </div>

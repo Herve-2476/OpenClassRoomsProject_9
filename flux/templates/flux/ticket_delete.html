@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load flux_extras %}
+{% block content %}
+<h1>Suppression d'un ticket</h1>  
+            
+<p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
+{% include 'flux/partials/ticket_snippet.html' %}
+
+<p>Etes-vous sûr de vouloir supprimer ce ticket?</p>
+<form action="" method="post">
+{% csrf_token %}
+<input type="submit" value="Supprimer">
+</form>       
+
+{% endblock content %}

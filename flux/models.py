@@ -1,8 +1,9 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.conf import settings
+from litreview.settings import BASE_DIR
 from django.db import models
 from authentication.models import User
 from PIL import Image
+import os
 
 
 class Ticket(models.Model):
@@ -26,6 +27,13 @@ class Ticket(models.Model):
         super().save(*args, **kwargs)
         if image_resize and self.image:
             self.resize_image()
+
+    def delete(self, *args, **kwargs):
+        old_image = kwargs.pop("old_image")
+        if old_image:
+            os.remove(str(BASE_DIR) + str(old_image.url))
+
+        super().delete(*args, **kwargs)
 
 
 class Review(models.Model):
