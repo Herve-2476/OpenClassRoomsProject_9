@@ -1,5 +1,5 @@
 {% load flux_extras %}
-<p>{{ instance.time_created|my_date }}</p>
+<p class="text-right">{{ instance.time_created|my_date }}</p>
 <p>{{ instance.headline }}</p>
 {%for i in instance.rating|return_list %}
     <span>&#x2605;</span>

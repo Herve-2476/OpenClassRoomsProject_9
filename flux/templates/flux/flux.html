@@ -1,28 +1,37 @@
 {% extends "base.html" %}
 {% load flux_extras %}
 {% block content %}
-<br>
-<button><a href="{% url 'ticket_create' %}">Demander une critique</a></button>
-<button><a href="{% url 'ticket_review_create' %}">Créer une critique</a></button>
-<div class="grid-container">
+<div class ="row text-center" >
+    <div class="col">
+        <a class="btn btn-dark" href="{% url 'ticket_create' %}">Demander une critique</a>
+    </div>
+    <div class="col">    
+        <a class="btn btn-dark" href="{% url 'ticket_review_create' %}">Créer une critique</a>
+    </div>
+</div>
+<div >
     {% for instance in page_obj %}
-        <div class="grid">
-            {% if instance|model_type == 'Ticket' %}
-                <h2>Ticket</h2>
-                <p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
-                {% include 'flux/partials/ticket_snippet.html' %}
-                {% if not instance.ticket_with_review %}
-                    <a href="{% url 'review_create' instance.id  %}">Créer une critique</a>
-                {% endif %} 
-
-            {% elif instance|model_type == 'Review' %}
-                <h2>Critique</h2>
-                <p>{% get_poster_display_verb instance.user %} publié une critique</p>
-                {% include 'flux/partials/review_snippet.html' %}
+        <div class="row">
+            <div class="col">
+                {% if instance|model_type == 'Ticket' %}
+                
+                    <div >    
+                        <p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
+                        {% include 'flux/partials/ticket_snippet.html' %}
+                        {% if not instance.ticket_with_review %}
+                            <a href="{% url 'review_create' instance.id  %}">Créer une critique</a>
+                        {% endif %} 
+                    </div>
                 
                 
-            {% endif %}
-
+                {% elif instance|model_type == 'Review' %}
+                    <h2>Critique</h2>
+                    <p>{% get_poster_display_verb instance.user %} publié une critique</p>
+                    {% include 'flux/partials/review_snippet.html' %}
+                    
+                    
+                {% endif %}
+            </div>
 
         </div>
 
