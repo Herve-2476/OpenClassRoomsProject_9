@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load flux_extras %}
 {% block content %}
-<h1 >Page d'affichage du flux</h1>
-<a href="{% url 'ticket_create' %}">Créer un ticket</a>
-<a href="{% url 'ticket_review_create' %}">Créer une critique</a>
+<br>
+<button><a href="{% url 'ticket_create' %}">Demander une critique</a></button>
+<button><a href="{% url 'ticket_review_create' %}">Créer une critique</a></button>
 <div class="grid-container">
     {% for instance in page_obj %}
         <div class="grid">

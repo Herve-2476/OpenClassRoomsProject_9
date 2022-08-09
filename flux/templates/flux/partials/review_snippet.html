@@ -1,10 +1,10 @@
 {% load flux_extras %}
+<p>{{ instance.time_created|my_date }}</p>
 <p>{{ instance.headline }}</p>
 {%for i in instance.rating|return_list %}
     <span>&#x2605;</span>
 {% endfor %}
 <p>{{ instance.body }}</p>
-<p>{{ instance.ticket.time_created|my_date }}</p>
 <p>Ticket - {% get_poster_display instance.ticket.user %}</p>
 <p>{{ instance.ticket.title }}</p>
 <p>{{ instance.ticket.description }}</p>

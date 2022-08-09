@@ -1,11 +1,20 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
-<h1>Page de création de ticket</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Envoyer">
+<div class="form">
+    <h2>Créer un ticket</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="field">
+                {{ field|as_crispy_field}}
+            </div>
+        {% endfor %}
+        <input type="submit" value="Envoyer">
 
-</form>
+    </form>
+</div>
+
 {% endblock content %}

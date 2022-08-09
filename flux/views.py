@@ -19,6 +19,7 @@ def subscriptions(request):
             new_followed_user = request.POST["username"]
             new_followed_user = User.objects.get(username=new_followed_user)
             models.UserFollows(user=request.user, followed_user=new_followed_user).save()
+            form = forms.UserFollowsForm()
 
     followed_users = models.UserFollows.objects.filter(user=request.user)
     subscripters = models.UserFollows.objects.filter(followed_user=request.user)
@@ -78,10 +79,13 @@ def flux_page(request):
 def posts(request):
     user = request.user
     tickets = models.Ticket.objects.filter(user=user)
-    # we keep only the tickets without review or if the user is author of both the ticket and the review
-    tickets = [
-        ticket for ticket in tickets if ticket.review_set.all().count() == 0 or user == ticket.review_set.all()[0].user
-    ]
+    if False:
+        # we keep only the tickets without review or if the user is author of both the ticket and the review
+        tickets = [
+            ticket
+            for ticket in tickets
+            if ticket.review_set.all().count() == 0 or user == ticket.review_set.all()[0].user
+        ]
     reviews = models.Review.objects.filter(user=user)
     posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
     paginator = Paginator(posts, 6)

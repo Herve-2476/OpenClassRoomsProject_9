@@ -10,19 +10,21 @@
 
 </head>
 {% if user.is_authenticated %}
-<header>
-    <ul >
-        <li><a href='{% url "flux" %}'>Flux</a></li>
-        <li><a href='{% url "posts" %}'>Posts</a></li>
-        <li><a href='{% url "subscriptions" %}'>Abonnements</a></li>
-        <li><a href='{% url "logout" %}'>Se déconnecter</a></li>
-    </ul>
-</header>
+    <header class="upbar">
+            <div class="logo">
+                <img src="{% static 'images/favicon.png' %}" width="40" height="40"  />
+                <span>LITReview</span>
+            </div>
+            <ul >
+                <li><a href='{% url "flux" %}'>Flux</a></li>
+                <li><a href='{% url "posts" %}'>Posts</a></li>
+                <li><a href='{% url "subscriptions" %}'>Abonnements</a></li>
+                <li><a href='{% url "logout" %}'>Se déconnecter ( {{ user }} )</a></li>
+            </ul>
+    </header>
 
-<body>
-
-    <p>vous êtes connecté en tant que {{ user }}</p>
-    {% endif %}
+    <body>
+{% endif %}
     
     {% block content %}
     {% endblock content %}
