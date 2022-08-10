@@ -28,14 +28,18 @@ class TicketCreateForm(forms.ModelForm):
     class Meta:
         model = models.Ticket
         exclude = ["user"]
+        widgets = {
+            "title": forms.Textarea(attrs={"rows": 1}),
+            "description": forms.Textarea(attrs={"rows": 10}),
+        }
 
 
 class ReviewCreateForm(forms.ModelForm):
     class Meta:
         model = models.Review
         exclude = ["user", "ticket"]
-        choices = ((i, str(i)) for i in range(6))
+        choices = ((i, "- " + str(i)) for i in range(6))
         widgets = {
-            "body": forms.Textarea(attrs={"cols": 80, "rows": 20}),
-            "rating": forms.RadioSelect(choices=choices, attrs={"class": "form-check-inline"}),
+            "body": forms.Textarea(attrs={"cols": 140, "rows": 10}),
+            "rating": forms.RadioSelect(choices=choices, attrs={"class": "inline"}),
         }

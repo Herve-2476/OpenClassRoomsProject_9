@@ -19,9 +19,9 @@
     <div class="bg-dark">
         <div class="container">
             <div class="row">
-                <nav class="col navbar navbar-expand-lg navbar-dark">
-                    <div class="navbar-brand">
-                        <img src="{% static 'images/logo_blanc.png' %}" alt="Site logo" width="40" height="40"  />
+                <nav class="col navbar navbar-expand-lg navbar-dark ">
+                    <div class="navbar-brand mx-auto">
+                        <img id="logo" src="{% static 'images/logo_blanc.png' %}" alt="Site logo" width="40" height="40"  />
                         <span>LITReview</span>
                     </div>
                     {% if user.is_authenticated %}

@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
         <div class="row text-center"">
             <div class="col" >
-                <p class="h2"> Inscrivez-vous maintenant</p>
+                <p class="h4"> Inscrivez-vous maintenant</p>
                 <br>
                 <p ><a class="btn btn-dark" href='{% url "signup" %}'>S'inscrire</a></p>
             </div>
             <div class="col">
-                <p class="h2">Connectez-vous</p>
+                <p class="h4">Connectez-vous</p>
                 <br>
                 <form method="post">
-                    {{ form.as_p }}
-                    {% csrf_token %}
+                    {% include "partials/crispy_snippet.html" %}
+                    
+                    
 
-                        <button class="btn btn-dark" type="submit">Se connecter</button>
+                        <p class="text-right"><button class="btn btn-dark" type="submit">Se connecter</button></p>
                 </form>
             </div>
         </div>

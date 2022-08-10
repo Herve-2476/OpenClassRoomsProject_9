@@ -1,3 +1,17 @@
 .right {
     float: right;
 }
+
+.inline div {
+    display: inline-block;
+    padding-right: 1em;
+}
+
+img {
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+#logo {
+    padding: 0;
+}

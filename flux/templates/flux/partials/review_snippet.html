@@ -6,10 +6,9 @@
     <span>&#x2605;</span>
 {% endfor %}</p>
 <p>{{ instance.body }}</p>
-<div class="bg-white">
+<div class="bg-white m-3 p-3">
     <p>Ticket - {% get_poster_display instance.ticket.user %}</p>
     <p>{{ instance.ticket.title }}</p>
-    <p>{{ instance.ticket.description }}</p>
     {% if instance.ticket.image %}
         <img src="{{ instance.ticket.image.url }}"/>
         <p></p>

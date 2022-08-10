@@ -140,5 +140,4 @@ MEDIA_ROOT = BASE_DIR.joinpath("media/")
 
 locale.setlocale(locale.LC_ALL, "fr_fr")
 
-CRISPY_TEMPLATE_PACK = "uni_form"
-CRISPY_TEMPLATE_PACK = "bootstrap"
+CRISPY_TEMPLATE_PACK = "bootstrap4"

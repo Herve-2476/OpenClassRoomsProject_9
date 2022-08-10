@@ -37,14 +37,15 @@ class Ticket(models.Model):
 
 
 class Review(models.Model):
-    headline = models.CharField(max_length=128)
+    headline = models.CharField(verbose_name="Titre", max_length=128)
     ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(
+        verbose_name="Note",
         # validates that rating must be between 0 and 5
-        validators=[MinValueValidator(0), MaxValueValidator(5)]
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
 
-    body = models.CharField(max_length=8192, blank=True)
+    body = models.CharField(verbose_name="", max_length=8192, blank=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
 

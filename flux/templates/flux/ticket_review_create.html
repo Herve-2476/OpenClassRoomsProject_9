@@ -1,12 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Page de création de critique</h1>
+<p class="h3 text-center">Créer une critique</p>
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form_ticket.as_p }}
-    {{ form_review.as_p }}
-    <input type="submit" value="Envoyer">
+    <div class="row">
+        <div class="col">
+            <div class="bg-light">
+                <p>Livre / Article</p>
+                <div style="padding:1em;"                    
+                    {{ form_ticket.as_p }}
+                </div>    
+            </div>
+        </div>    
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="bg-light">
+                <p>Critique</p>
+                <div style="padding:1em;"
+                    {{ form_review.as_p }}
+                    <p class="text-right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
+                </div>                
+            </div>
+        </div>
+    <div>
 
 </form>
 {% endblock content %}
