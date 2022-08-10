@@ -1,13 +1,17 @@
 {% load flux_extras %}
-<p class="text-right">{{ instance.time_created|my_date }}</p>
-<p>{{ instance.headline }}</p>
+<p><span>{% get_poster_display_verb instance.user %} publié une critique</span><span class="right">
+{{ instance.time_created|my_date }}</span></p>
+<p><span class="h4">{{ instance.headline }}</span> - 
 {%for i in instance.rating|return_list %}
     <span>&#x2605;</span>
-{% endfor %}
+{% endfor %}</p>
 <p>{{ instance.body }}</p>
-<p>Ticket - {% get_poster_display instance.ticket.user %}</p>
-<p>{{ instance.ticket.title }}</p>
-<p>{{ instance.ticket.description }}</p>
-{% if instance.ticket.image %}
-    <img src="{{ instance.ticket.image.url }}"/>
-{% endif %}
+<div class="bg-white">
+    <p>Ticket - {% get_poster_display instance.ticket.user %}</p>
+    <p>{{ instance.ticket.title }}</p>
+    <p>{{ instance.ticket.description }}</p>
+    {% if instance.ticket.image %}
+        <img src="{{ instance.ticket.image.url }}"/>
+        <p></p>
+    {% endif %}
+</div>    

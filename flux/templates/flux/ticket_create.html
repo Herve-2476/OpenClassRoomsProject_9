@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="form">
-    <h2>Créer un ticket</h2>
+    <p class= "text-center h4">Créer un ticket</p>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
@@ -12,7 +12,7 @@
                 {{ field|as_crispy_field}}
             </div>
         {% endfor %}
-        <input type="submit" value="Envoyer">
+        <p class="right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
 
     </form>
 </div>

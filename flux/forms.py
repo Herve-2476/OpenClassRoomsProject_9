@@ -37,5 +37,5 @@ class ReviewCreateForm(forms.ModelForm):
         choices = ((i, str(i)) for i in range(6))
         widgets = {
             "body": forms.Textarea(attrs={"cols": 80, "rows": 20}),
-            "rating": forms.RadioSelect(choices=choices),
+            "rating": forms.RadioSelect(choices=choices, attrs={"class": "form-check-inline"}),
         }

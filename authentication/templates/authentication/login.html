@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Inscrivez-vous maintenant</p>
-<button> <a href='{% url "signup" %}'>S'inscrire</a></button>
-<p>Connectez-vous</p>
-<form method="post">
-    {{ form.as_p }}
-    {% csrf_token %}
 
-    <button type="submit">Se connecter</button>
-</form>
+        <div class="row text-center"">
+            <div class="col" >
+                <p class="h2"> Inscrivez-vous maintenant</p>
+                <br>
+                <p ><a class="btn btn-dark" href='{% url "signup" %}'>S'inscrire</a></p>
+            </div>
+            <div class="col">
+                <p class="h2">Connectez-vous</p>
+                <br>
+                <form method="post">
+                    {{ form.as_p }}
+                    {% csrf_token %}
+
+                        <button class="btn btn-dark" type="submit">Se connecter</button>
+                </form>
+            </div>
+        </div>
 {% endblock content %}

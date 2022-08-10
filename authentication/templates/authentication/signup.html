@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Inscrivez-vous</p>
-
+<p class="h2 text-center">Inscrivez-vous</p>
+<br>
 <form method="post">
     {{ form.as_p }}
     {% csrf_token %}
-    <button> <a href='{% url "login" %}'>Retour</a></button>
-    <button type="submit">S'inscrire</button>
+    <a class="btn btn-dark " href='{% url "login" %}'>Retourner</a>
+    
+    <button class="btn btn-dark " type="submit">S'inscrire</button>
 </form>
 {% endblock content %}

@@ -1,27 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Page d'affichage des abonnements</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Envoyer">
-</form>
-<ul>
-    <h1>Abonnements</h1>
-    <form method="post">
-        {{ followed_users.as_p }}
-        {% csrf_token %}
-        {% for followed_user in followed_users %}
-        <li>{{ followed_user.followed_user }} <button><a
-                    href="{% url 'subscription_delete' followed_user.id %}">Désabonner</a></button></li>
+    <div class="h2 text-center">
+        <p>Suivre d'autres utilisateurs</p>        
+        <div class="h4">
+            <br>
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input  class="btn btn-dark" type="submit" value="Envoyer">
+            </form>
+        </div>
+    </div>
+    <ul>
+        <br>
+        <p class="h2 text-center">Abonnements</p>
+        <br>
+        <form method="post">            
+                {{ followed_users.as_p }}
+                {% csrf_token %}
+                {% for followed_user in followed_users %}
+                <div class="row">
+                    <div class="col-9 col-lg-10 bg-white border"
+                        <p>{{ followed_user.followed_user }}</p>
+                    </div>
+                    <div class="col-3 col-lg-2 text-center">
+                        <a class="btn btn-dark"
+                                href="{% url 'subscription_delete' followed_user.id %}">Désabonner</a>
+                    </div>
+                </div>
+                {% endfor %}            
+        </form>
+    </ul>
+    <ul>
+        <br>
+        <p class="h2 text-center">Abonnés</p>
+        <br>
+        {% for subscripter in subscripters %}
+            <div class="row">
+                <div class="col-12 bg-white border"
+                    <p>{{ subscripter.user }}</p>
+                </div>
+            </div>
         {% endfor %}
-    </form>
-</ul>
-<ul>
-    <h1>Abonnés</h1>
-    {% for subscripter in subscripters %}
-    <li>{{ subscripter.user }}</li>
-    {% endfor %}
-</ul>
+    </ul>
 {% endblock content %}

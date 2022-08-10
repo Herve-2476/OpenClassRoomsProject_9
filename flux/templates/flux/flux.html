@@ -9,24 +9,23 @@
         <a class="btn btn-dark" href="{% url 'ticket_review_create' %}">Créer une critique</a>
     </div>
 </div>
+<br>
 <div >
     {% for instance in page_obj %}
-        <div class="row">
+        <div class="row bg-light">
             <div class="col">
                 {% if instance|model_type == 'Ticket' %}
                 
-                    <div >    
-                        <p>{% get_poster_display_verb instance.user %} publié un ticket</p>            
+                    <div >         
                         {% include 'flux/partials/ticket_snippet.html' %}
                         {% if not instance.ticket_with_review %}
-                            <a href="{% url 'review_create' instance.id  %}">Créer une critique</a>
+                            <p class="text-right"><a class="btn btn-dark" href="{% url 'review_create' instance.id  %}">Créer une critique</a></p>
+                        {% else %}
+                            <p></p>
                         {% endif %} 
-                    </div>
+                    </div>             
                 
-                
-                {% elif instance|model_type == 'Review' %}
-                    <h2>Critique</h2>
-                    <p>{% get_poster_display_verb instance.user %} publié une critique</p>
+                {% elif instance|model_type == 'Review' %}                    
                     {% include 'flux/partials/review_snippet.html' %}
                     
                     
@@ -34,6 +33,7 @@
             </div>
 
         </div>
+        <br>
 
     {% endfor %} 
 </div> 
