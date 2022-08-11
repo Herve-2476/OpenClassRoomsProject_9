@@ -15,3 +15,15 @@ img {
 #logo {
     padding: 0;
 }
+
+.entry_field {
+    width: 100%;
+    height: 35px;
+    margin-left: 25px;
+    margin-right: 0;
+    border: none;
+}
+
+::placeholder {
+    text-align: center
+}

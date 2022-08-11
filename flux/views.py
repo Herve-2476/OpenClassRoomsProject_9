@@ -15,7 +15,9 @@ def subscriptions(request):
     if request.method == "POST":
 
         form = forms.UserFollowsForm(request.POST, instance=request.user)
+
         if form.is_valid():
+
             new_followed_user = request.POST["username"]
             new_followed_user = User.objects.get(username=new_followed_user)
             models.UserFollows(user=request.user, followed_user=new_followed_user).save()

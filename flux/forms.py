@@ -8,7 +8,16 @@ class UserFollowsForm(forms.Form):
         self.instance = kwargs.get("instance", None)
         super().__init__(*args)
 
-    username = forms.CharField(label="Utilisateur à suivre", max_length=150)
+    username = forms.CharField(
+        label="",
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={
+                "class": "entry_field form-control",
+                "placeholder": "Nom d'utilisateur",
+            }
+        ),
+    )
 
     def clean_username(self):
         new_followed_user = self.cleaned_data["username"]
