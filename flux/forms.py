@@ -39,7 +39,7 @@ class TicketCreateForm(forms.ModelForm):
         exclude = ["user"]
         widgets = {
             "title": forms.Textarea(attrs={"rows": 1}),
-            "description": forms.Textarea(attrs={"rows": 10}),
+            "description": forms.Textarea(attrs={"rows": 8}),
         }
 
 
@@ -49,6 +49,6 @@ class ReviewCreateForm(forms.ModelForm):
         exclude = ["user", "ticket"]
         choices = ((i, "- " + str(i)) for i in range(6))
         widgets = {
-            "body": forms.Textarea(attrs={"cols": 140, "rows": 10}),
+            "body": forms.Textarea(attrs={"cols": 140, "rows": 8}),
             "rating": forms.RadioSelect(choices=choices, attrs={"class": "inline"}),
         }

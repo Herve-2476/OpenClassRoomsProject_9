@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-
-
 {% block content %}
-<div class="form">
-    <p class= "text-center h4">Créer un ticket</p>
-    <form method="post" enctype="multipart/form-data">
-        {% include "partials/crispy_snippet.html" %}
-        <p class="right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
+<p class= "text-center h4">Créer un ticket</p>
+<form method="post" enctype="multipart/form-data">
+    {% include "partials/crispy_snippet.html" %}
+    <p class="right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
 
-    </form>
-</div>
-
+</form>
 {% endblock content %}

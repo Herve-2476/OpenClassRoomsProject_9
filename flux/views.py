@@ -120,8 +120,11 @@ def ticket_modify(request, id_ticket):
         if form.is_valid():
             form.save()
             return redirect("posts")
+    image_url = {}
+    if ticket.image:
+        image_url = {"image_url": ticket.image.url}
 
-    return render(request, "flux/ticket_modify.html", context={"form": form})
+    return render(request, "flux/ticket_modify.html", context={"form": form, "image_url": image_url})
 
 
 @login_required
@@ -147,7 +150,7 @@ def review_create(request, id_ticket):
             review.save()
             return redirect("flux")
     ticket = models.Ticket.objects.get(id=id_ticket)
-    context = {"form": form, "ticket": ticket}
+    context = {"form": form, "instance": ticket}
     return render(request, "flux/review_create.html", context=context)
 
 
@@ -161,7 +164,7 @@ def review_modify(request, id_review):
             form.save()
             return redirect("posts")
 
-    return render(request, "flux/review_modify.html", context={"form": form})
+    return render(request, "flux/review_modify.html", context={"instance": review.ticket, "form": form})
 
 
 @login_required

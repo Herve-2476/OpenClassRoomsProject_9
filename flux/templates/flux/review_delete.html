@@ -1,10 +1,33 @@
 {% extends "base.html" %}
 {% load flux_extras %}
 {% block content %}
-<h1>Suppression d'une critique</h1>  
-            
-<p>{% get_poster_display_verb instance.user %} publié une critique</p>            
-{% include 'flux/partials/ticket_snippet.html' %}
+<p class="h4 text-center">Suppression d'une critique</p>
+<br>           
+
+<div class="bg-light p-2"            
+        <p><span class="right">{{ instance.time_created|my_date }}</span></p>
+        <p>{{ instance.ticket.title }}</p>
+        <p>{{ instance.ticket.description }}</p>
+        {% if instance.ticket.image %}
+            <img src="{{ instance.image.url }}"/>
+        {% endif %}
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <p>Etes-vous sûr de vouloir supprimer cette critique?</p>
 <form action="" method="post">

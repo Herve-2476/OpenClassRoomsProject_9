@@ -1,26 +1,43 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-<p class="h3 text-center">Créer une critique</p>
+<p class="h4 text-center">Créer une critique</p>
+<br>
 
 <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+    {% csrf_token %}    
     <div class="row">
         <div class="col">
-            <div class="bg-light">
+            <div class="bg-light border">
                 <p>Livre / Article</p>
-                <div style="padding:1em;"                    
-                    {{ form_ticket.as_p }}
+                <div style="padding:1em;">                
+                    {% for field in form_ticket %}
+                        <div class="field">
+                            {{ field|as_crispy_field}}
+                        </div>
+                    {% endfor %}
                 </div>    
             </div>
         </div>    
     </div>
     <div class="row">
         <div class="col">
-            <div class="bg-light">
+            <div class="bg-light border">
                 <p>Critique</p>
-                <div style="padding:1em;"
-                    {{ form_review.as_p }}
+                <div style="padding:1em">
+                    {% for field in form_review %}
+                        {% if field.label != "Note" %}
+                            <div class="field">
+                                {{ field|as_crispy_field}}
+                            </div>
+                        {% else %}
+                            <div class="field inline">
+                                {{ field|as_crispy_field}}
+                            </div>
+                        {% endif %}
+
+
+                    {% endfor %}
                     <p class="text-right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
                 </div>                
             </div>

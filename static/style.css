@@ -2,14 +2,32 @@
     float: right;
 }
 
-.inline div {
+.L {
     display: inline-block;
     padding-right: 1em;
+    background-color: #f00;
 }
+
+#div_id_rating>div {
+    display: inline-flex;
+
+}
+
+#div_id_rating>label {
+    display: block;
+
+}
+
+.form-check {
+
+    margin-left: 2em;
+}
+
 
 img {
     padding-right: 1em;
     padding-left: 1em;
+    padding-bottom: 1em;
 }
 
 #logo {
