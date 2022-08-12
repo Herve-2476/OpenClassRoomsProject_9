@@ -4,30 +4,11 @@
 <p class="h4 text-center">Suppression d'une critique</p>
 <br>           
 
-<div class="bg-light p-2"            
-        <p><span class="right">{{ instance.time_created|my_date }}</span></p>
-        <p>{{ instance.ticket.title }}</p>
-        <p>{{ instance.ticket.description }}</p>
-        {% if instance.ticket.image %}
-            <img src="{{ instance.image.url }}"/>
-        {% endif %}
+<div class="row bg-light" p-3 m-3>
+    <div class="col">                        
+        {% include 'flux/partials/review_snippet.html' %}
+    </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <p>Etes-vous sûr de vouloir supprimer cette critique?</p>
 <form action="" method="post">
