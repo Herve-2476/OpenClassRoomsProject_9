@@ -1,7 +1,8 @@
-from time import strftime
-import locale
+from litreview.settings import TIME_ZONE
 from django import template
 from django.utils import timezone
+import pytz
+
 
 MINUTE = 60
 HOUR = 60 * MINUTE
@@ -52,6 +53,7 @@ def return_list(n):
 
 @register.filter
 def my_date(date):
-    # "%H:%i, %d %F %Y"
-
+    local_tz = pytz.timezone(TIME_ZONE)
+    # date = date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+    date = date.astimezone(local_tz)
     return date.strftime("%H:%M, %d %B %Y")

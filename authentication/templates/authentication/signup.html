@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-
 {% block content %}
 <p class="h4 text-center">Inscrivez-vous</p>
 <br>
 <div class="w-50 mx-auto">
     <form method="post">
         {% include "partials/crispy_snippet.html" %}
-            <p class="text-right">
-                <a class="btn btn-dark ml-auto" href='{% url "login" %}'>Retourner</a>        
-                <button class="btn btn-dark" type="submit">S'inscrire</button>
-            </p>
+        <p class="text-right">
+            <a class="btn btn-dark ml-auto" href='{% url "login" %}'>Retourner</a>        
+            <button class="btn btn-dark" type="submit">S'inscrire</button>
+        </p>
     </form>
 </div>   
 {% endblock content %}

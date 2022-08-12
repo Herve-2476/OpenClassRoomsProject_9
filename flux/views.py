@@ -1,12 +1,14 @@
 from itertools import chain
-from django.db.models import Case, Value, When, CharField, BooleanField
+from django.db.models import Case, Value, When, CharField, BooleanField, DateTimeField
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.utils import timezone
 from . import forms, models
 from authentication.models import User
+import datetime
 
 
 @login_required
@@ -81,15 +83,22 @@ def flux_page(request):
 def posts(request):
     user = request.user
     tickets = models.Ticket.objects.filter(user=user)
-    if False:
-        # we keep only the tickets without review or if the user is author of both the ticket and the review
-        tickets = [
-            ticket
-            for ticket in tickets
-            if ticket.review_set.all().count() == 0 or user == ticket.review_set.all()[0].user
-        ]
+
     reviews = models.Review.objects.filter(user=user)
-    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
+    tickets.annotate(time_for_sort=Value("", DateTimeField()))
+    reviews.annotate(time_for_sort=Value("", DateTimeField()))
+    for ticket in tickets:
+        if ticket.time_updated:
+            ticket.time_for_sort = ticket.time_updated
+        else:
+            ticket.time_for_sort = ticket.time_created
+    for review in reviews:
+        if review.time_updated:
+            review.time_for_sort = review.time_updated
+        else:
+            review.time_for_sort = review.time_created
+
+    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_for_sort, reverse=True)
     paginator = Paginator(posts, 6)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -118,7 +127,9 @@ def ticket_modify(request, id_ticket):
     if request.method == "POST":
         form = forms.TicketCreateForm(request.POST, request.FILES, instance=ticket)
         if form.is_valid():
-            form.save()
+            ticket = form.save(commit=False)
+            ticket.time_updated = timezone.now()
+            ticket.save()
             return redirect("posts")
     image_url = {}
     if ticket.image:
@@ -161,7 +172,9 @@ def review_modify(request, id_review):
     if request.method == "POST":
         form = forms.ReviewCreateForm(request.POST, request.FILES, instance=review)
         if form.is_valid():
-            form.save()
+            review = form.save(commit=False)
+            review.time_updated = datetime.datetime.now()
+            review.save()
             return redirect("posts")
 
     return render(request, "flux/review_modify.html", context={"instance": review.ticket, "form": form})

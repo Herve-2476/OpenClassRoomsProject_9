@@ -36,7 +36,7 @@ class UserFollowsForm(forms.Form):
 class TicketCreateForm(forms.ModelForm):
     class Meta:
         model = models.Ticket
-        exclude = ["user"]
+        exclude = ["user", "time_updated"]
         widgets = {
             "title": forms.Textarea(attrs={"rows": 1}),
             "description": forms.Textarea(attrs={"rows": 8}),
@@ -46,7 +46,7 @@ class TicketCreateForm(forms.ModelForm):
 class ReviewCreateForm(forms.ModelForm):
     class Meta:
         model = models.Review
-        exclude = ["user", "ticket"]
+        exclude = ["user", "ticket", "time_updated"]
         choices = ((i, "- " + str(i)) for i in range(6))
         widgets = {
             "body": forms.Textarea(attrs={"cols": 140, "rows": 8}),

@@ -12,6 +12,7 @@ class Ticket(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     image = models.ImageField(null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
+    time_updated = models.DateTimeField(null=True)
 
     IMAGE_MAX_SIZE = (800, 800)
 
@@ -48,6 +49,7 @@ class Review(models.Model):
     body = models.CharField(verbose_name="", max_length=8192, blank=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
+    time_updated = models.DateTimeField(null=True)
 
 
 class UserFollows(models.Model):
