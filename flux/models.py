@@ -34,7 +34,7 @@ class Ticket(models.Model):
         if not old_image and self.image:
             self.resize_image()
         else:
-            if old_image != self.image:
+            if old_image != self.image and old_image:
                 self.delete_image(old_image)
                 self.resize_image()
 
