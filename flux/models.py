@@ -21,18 +21,27 @@ class Ticket(models.Model):
         image = Image.open(self.image)
         image.thumbnail(self.IMAGE_MAX_SIZE)
         image.save(self.image.path)
-        print("image réduite sauvegardée")
+        print(self.image.path, "image réduite sauvegardée")
+
+    def delete_image(self, old_image):
+        os.remove(str(BASE_DIR) + str(old_image.url))
+        print(old_image.url, "supprimée")
 
     def save(self, *args, **kwargs):
-        image_resize = kwargs.pop("image_resize", True)
+        # we delete old image if changes
+        old_image = kwargs.pop("old_image", False)
         super().save(*args, **kwargs)
-        if image_resize and self.image:
+        if not old_image and self.image:
             self.resize_image()
+        else:
+            if old_image != self.image:
+                self.delete_image(old_image)
+                self.resize_image()
 
     def delete(self, *args, **kwargs):
-        old_image = kwargs.pop("old_image")
+        old_image = kwargs.pop("old_image", False)
         if old_image:
-            os.remove(str(BASE_DIR) + str(old_image.url))
+            self.delete_image(old_image)
 
         super().delete(*args, **kwargs)
 

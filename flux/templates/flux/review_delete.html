@@ -2,18 +2,17 @@
 {% load flux_extras %}
 {% block content %}
 <p class="h4 text-center">Suppression d'une critique</p>
-<br>           
-
+<br> 
 <div class="row bg-light" p-3 m-3>
     <div class="col">                        
         {% include 'flux/partials/review_snippet.html' %}
     </div>
 </div>
-
 <p>Etes-vous sûr de vouloir supprimer cette critique?</p>
 <form action="" method="post">
-{% csrf_token %}
-<input type="submit" value="Supprimer">
+    {% csrf_token %}
+    <a class="btn btn-dark ml-auto" href='{% url "posts" %}'>Retourner</a>
+    <input class="btn btn-dark" type="submit" value="Supprimer">
 </form>       
 
 {% endblock content %}

@@ -1,8 +1,8 @@
 {% load flux_extras %}
 <p><span>{% get_poster_display_verb instance.user %} demandé une critique</span>
-<span class="right"> créé le {{ instance.time_created|my_date }}</span></p>
+<span class="right"> créé {{ instance.time_created|my_date }}</span></p>
 <p>{{ instance.title }}
-    {% if instance.time_updated %}<span class="right">modifié le {{ instance.time_updated|my_date }}</span>
+    {% if instance.time_updated %}<span class="right">modifié {{ instance.time_updated|my_date }}</span>
     {% endif %}
 </p>
 <p>{{ instance.description }}</p>

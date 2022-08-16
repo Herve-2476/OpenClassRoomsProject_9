@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
     <div class="row text-center">
         <div class="col" >
@@ -10,17 +9,8 @@
         <div class="col">
             <p class="h4">Connectez-vous</p>
             <br>
-            <form method="post">                
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                <div class="fieldWrapper">
-                    {{ form.username.errors }}
-                    {{ form.username|as_crispy_field }}
-                </div>
-                <div class="fieldWrapper">
-                    {{ form.password.errors }}
-                    {{ form.password|as_crispy_field }}
-                </div>                
+            <form method="post">
+                {% include "partials/crispy_snippet.html" %}
                 <p class="text-right"><button class="btn btn-dark" type="submit">Se connecter</button></p>
             </form>
         </div>

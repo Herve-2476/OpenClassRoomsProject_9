@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
 <p class= "text-center h4">Modifier votre ticket</p>
 <form method="post" enctype="multipart/form-data">    
@@ -9,19 +10,15 @@
             <div class="field">
                 {{ field|as_crispy_field}}
             </div>
-        {% else %}
-            <div class="field">                
+        {% else %}        
+            <div class="field">               
                 {{ field|as_crispy_field}}
-                <img src="{{ image_url.image_url }}"/>
+                {% if field.value %}
+                    <img src="{% get_media_prefix %}{{ field.value }}"/>
+                {% endif %}
             </div>
         {% endif %}
-
-
     {% endfor %}
-    
-    
-    
     <p class="right"><input class="btn btn-dark" type="submit" value="Envoyer"></p>
-
 </form>
 {% endblock content %}

@@ -45,3 +45,8 @@ img {
 ::placeholder {
     text-align: center
 }
+
+#div_id_username label,
+#div_id_password label {
+    display: none;
+}

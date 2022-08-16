@@ -1,92 +1,16 @@
+from django.shortcuts import get_object_or_404
 from itertools import chain
-from django.db.models import Case, Value, When, CharField, BooleanField, DateTimeField
+from django.db.models import Value, BooleanField
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from django.forms import modelformset_factory
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.utils import timezone
 from . import forms, models
 from authentication.models import User
 import datetime
 
 
-@login_required
-def subscriptions(request):
-    form = forms.UserFollowsForm()
-    if request.method == "POST":
-
-        form = forms.UserFollowsForm(request.POST, instance=request.user)
-
-        if form.is_valid():
-
-            new_followed_user = request.POST["username"]
-            new_followed_user = User.objects.get(username=new_followed_user)
-            models.UserFollows(user=request.user, followed_user=new_followed_user).save()
-            form = forms.UserFollowsForm()
-
-    followed_users = models.UserFollows.objects.filter(user=request.user)
-    subscripters = models.UserFollows.objects.filter(followed_user=request.user)
-
-    return render(
-        request,
-        "flux/subscriptions.html",
-        context={"form": form, "followed_users": followed_users, "subscripters": subscripters},
-    )
-
-
-@login_required
-def subscription_delete(request, id_subscription):
-    models.UserFollows.objects.get(id=id_subscription).delete()
-    return redirect("subscriptions")
-
-
-@login_required
-def flux_page(request):
-
-    user = request.user
-    followed_users = models.UserFollows.objects.filter(user=user)
-    followed_users = [user] + [user.followed_user for user in followed_users]
-    # we retrieve all the tickets of the user and of the followed users
-    tickets = models.Ticket.objects.filter(user__in=followed_users).annotate(
-        ticket_with_review=Value(False, BooleanField())
-    )
-
-    # we keep only the tickets without review or with review if the author of the ticket is not the one of the review
-    tickets = [
-        ticket
-        for ticket in tickets
-        if ticket.review_set.all().count() == 0
-        or (ticket.review_set.all().count() == 1 and ticket.user != ticket.review_set.all()[0].user)
-    ]
-
-    # we mark the ticket if there is or not a rewiew associated
-    for ticket in tickets:
-        if ticket.review_set.all().count() == 1:
-            ticket.ticket_with_review = True
-            ticket.save(image_resize=False)
-    # we retrieve all the tickets of the user and of the followed users
-    reviews = models.Review.objects.all()
-    reviews = [review for review in reviews if review.user in followed_users or (review.ticket.user == user)]
-
-    posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_created, reverse=True)
-
-    paginator = Paginator(posts, 6)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    context = {"page_obj": page_obj}
-
-    return render(request, "flux/flux.html", context=context)
-
-
-@login_required
-def posts(request):
-    user = request.user
-    tickets = models.Ticket.objects.filter(user=user)
-
-    reviews = models.Review.objects.filter(user=user)
-    tickets.annotate(time_for_sort=Value("", DateTimeField()))
-    reviews.annotate(time_for_sort=Value("", DateTimeField()))
+def sort_and_pagine(request, tickets, reviews):
     for ticket in tickets:
         if ticket.time_updated:
             ticket.time_for_sort = ticket.time_updated
@@ -99,10 +23,81 @@ def posts(request):
             review.time_for_sort = review.time_created
 
     posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_for_sort, reverse=True)
-    paginator = Paginator(posts, 6)
+    paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context = {"page_obj": page_obj}
+    return context
+
+
+@login_required
+def subscriptions(request):
+    form = forms.UserFollowsForm()
+    if request.method == "POST":
+        form = forms.UserFollowsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            new_followed_user = request.POST["username"]
+            new_followed_user = get_object_or_404(User, username=new_followed_user)
+            models.UserFollows(user=request.user, followed_user=new_followed_user).save()
+            form = forms.UserFollowsForm()
+    followed_users = models.UserFollows.objects.filter(user=request.user)
+    subscripters = models.UserFollows.objects.filter(followed_user=request.user)
+    return render(
+        request,
+        "flux/subscriptions.html",
+        context={"form": form, "followed_users": followed_users, "subscripters": subscripters},
+    )
+
+
+@login_required
+def subscription_delete(request, id_subscription):
+    get_object_or_404(models.UserFollows, id=id_subscription).delete()
+    return redirect("subscriptions")
+
+
+@login_required
+def flux_page(request):
+
+    user = request.user
+    followed_users = models.UserFollows.objects.filter(user=user)
+    followed_users = [user] + [user.followed_user for user in followed_users]
+
+    # we retrieve all the tickets of the user and of the followed users
+    tickets = models.Ticket.objects.filter(user__in=followed_users).annotate(
+        ticket_with_review=Value(False, BooleanField()), time_for_sort=Value("")
+    )
+
+    # we keep only the tickets without review or with review if the author of the ticket is not the one of the review
+    tickets = [
+        ticket
+        for ticket in tickets
+        if ticket.review_set.all().count() == 0
+        or (ticket.review_set.all().count() == 1 and ticket.user != ticket.review_set.all()[0].user)
+    ]
+    # we mark the ticket if there is or not a rewiew associated (to propose to create a review)
+    for ticket in tickets:
+        if ticket.review_set.all().count() == 1:
+            ticket.ticket_with_review = True
+            ticket.save(old_image=ticket.image)
+
+    # we retrieve all the tickets of the user and of the followed users
+    reviews = models.Review.objects.all()
+    reviews.annotate(time_for_sort=Value(""))
+    reviews = [review for review in reviews if review.user in followed_users or (review.ticket.user == user)]
+
+    context = sort_and_pagine(request, tickets, reviews)
+
+    return render(request, "flux/flux.html", context=context)
+
+
+@login_required
+def posts(request):
+    user = request.user
+    tickets = models.Ticket.objects.filter(user=user)
+    reviews = models.Review.objects.filter(user=user)
+    tickets.annotate(time_for_sort=Value(""))
+    reviews.annotate(time_for_sort=Value(""))
+    context = sort_and_pagine(request, tickets, reviews)
     return render(request, "flux/posts.html", context=context)
 
 
@@ -116,33 +111,28 @@ def ticket_create(request):
             ticket.user = request.user
             ticket.save()
             return redirect("flux")
-
     return render(request, "flux/ticket_create.html", context={"form": form})
 
 
 @login_required
 def ticket_modify(request, id_ticket):
-    ticket = models.Ticket.objects.get(id=id_ticket)
+    ticket = get_object_or_404(models.Ticket, id=id_ticket)
+    old_image = ticket.image
     form = forms.TicketCreateForm(instance=ticket)
     if request.method == "POST":
         form = forms.TicketCreateForm(request.POST, request.FILES, instance=ticket)
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.time_updated = timezone.now()
-            ticket.save()
+            ticket.save(old_image=old_image)
             return redirect("posts")
-    image_url = {}
-    if ticket.image:
-        image_url = {"image_url": ticket.image.url}
-
-    return render(request, "flux/ticket_modify.html", context={"form": form, "image_url": image_url})
+    return render(request, "flux/ticket_modify.html", context={"form": form})
 
 
 @login_required
 def ticket_delete(request, id_ticket):
-    instance = models.Ticket.objects.get(id=id_ticket)
+    instance = get_object_or_404(models.Ticket, id=id_ticket)
     old_image = instance.image
-
     if request.method == "POST":
         instance.delete(old_image=old_image)
         return redirect("posts")
@@ -157,17 +147,17 @@ def review_create(request, id_ticket):
         if form.is_valid():
             review = form.save(commit=False)
             review.user = request.user
-            review.ticket = models.Ticket.objects.get(id=id_ticket)
+            review.ticket = get_object_or_404(models.Ticket, id=id_ticket)
             review.save()
             return redirect("flux")
-    ticket = models.Ticket.objects.get(id=id_ticket)
+    ticket = get_object_or_404(models.Ticket, id=id_ticket)
     context = {"form": form, "instance": ticket}
     return render(request, "flux/review_create.html", context=context)
 
 
 @login_required
 def review_modify(request, id_review):
-    review = models.Review.objects.get(id=id_review)
+    review = get_object_or_404(models.Review, id=id_review)
     form = forms.ReviewCreateForm(instance=review)
     if request.method == "POST":
         form = forms.ReviewCreateForm(request.POST, request.FILES, instance=review)
@@ -182,7 +172,7 @@ def review_modify(request, id_review):
 
 @login_required
 def review_delete(request, id_review):
-    instance = models.Review.objects.get(id=id_review)
+    instance = get_object_or_404(models.Review, id=id_review)
     if request.method == "POST":
         instance.delete()
         return redirect("posts")

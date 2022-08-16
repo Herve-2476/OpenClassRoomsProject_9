@@ -1,20 +1,18 @@
 {% load flux_extras %}
 <p><span>{% get_poster_display_verb instance.user %} publié une critique</span><span class="right">
-créée le {{ instance.time_created|my_date }}</span></p>
+créée {{ instance.time_created|my_date }}</span></p>
 <p><span class="h4">{{ instance.headline }}</span> - 
 {%for i in instance.rating|return_list %}
     <span>&#x2605;</span>
 {% endfor %}
-{% if instance.time_updated %}<span class="right">modifiée le {{ instance.time_updated|my_date }}</span>
+{% if instance.time_updated %}<span class="right">modifiée {{ instance.time_updated|my_date }}</span>
 {% endif %}
 </p>
 <p>{{ instance.body }}</p>
-<div class="bg-white m-3 p-3">
-    
+<div class="bg-white m-3 p-3">    
         <p>Ticket - {% get_poster_display instance.ticket.user %}</p>
         <p>{{ instance.ticket.title }}</p>
         {% if instance.ticket.image %}
             <img src="{{ instance.ticket.image.url }}"/>
-        {% endif %}
-    
+        {% endif %}    
 </div>    

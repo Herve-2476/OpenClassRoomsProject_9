@@ -14,8 +14,7 @@
     {% for instance in page_obj %}
         <div class="row bg-light">
             <div class="col">
-                {% if instance|model_type == 'Ticket' %}
-                
+                {% if instance|model_type == 'Ticket' %}                
                     <div >         
                         {% include 'flux/partials/ticket_snippet.html' %}
                         {% if not instance.ticket_with_review %}
@@ -23,18 +22,13 @@
                         {% else %}
                             <p></p>
                         {% endif %} 
-                    </div>             
-                
+                    </div> 
                 {% elif instance|model_type == 'Review' %}                    
                     {% include 'flux/partials/review_snippet.html' %}
-                    
-                    
                 {% endif %}
             </div>
-
         </div>
         <br>
-
     {% endfor %} 
 </div> 
 {% include 'partials/page_navigator.html' %}

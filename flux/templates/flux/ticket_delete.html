@@ -4,17 +4,13 @@
     <p class="h4 text-center">Suppression d'un ticket</p> 
     <br> 
     <div class="bg-light p-2"            
-        <p><span class="right">{{ instance.time_created|my_date }}</span></p>
-        <p>{{ instance.title }}</p>
-        <p>{{ instance.description }}</p>
-        {% if instance.image %}
-            <img src="{{ instance.image.url }}"/>
-        {% endif %}
+        {% include 'flux/partials/ticket_snippet.html' %}
     </div>
     <br>
-    <p>Etes-vous sûr de vouloir supprimer ce ticket?</p>
+    <p>Etes-vous sûr de vouloir supprimer ce ticket?</p>    
     <form action="" method="post">
-    {% csrf_token %}
-    <input class="btn btn-dark" type="submit" value="Supprimer">
+        {% csrf_token %}
+        <a class="btn btn-dark ml-auto" href='{% url "posts" %}'>Retourner</a>
+        <input class="btn btn-dark" type="submit" value="Supprimer">
     </form>
 {% endblock content %}
