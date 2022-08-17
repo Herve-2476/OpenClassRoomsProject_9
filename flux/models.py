@@ -22,7 +22,10 @@ class Ticket(models.Model):
             image.save(self.image.path)
 
     def delete_image(self, old_image):
-        os.remove(str(BASE_DIR) + str(old_image.url))
+        try:
+            os.remove(str(BASE_DIR) + str(old_image.url))
+        except:
+            print("effacement de l'image impossible")
 
     def save(self, *args, **kwargs):
         old_image = kwargs.pop("old_image", False)
