@@ -9,7 +9,7 @@ This project aims to develop a web application. This application allows you to r
 
 ## Creation of the virtual environment (Python 3.10)
  
-* python -m venv venv
+* python -m venv venv # or *python3 -m venv venv* 
 
 * source venv/bin/activate *# to launch your environment under linux / Mac*
 
