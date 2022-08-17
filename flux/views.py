@@ -10,19 +10,18 @@ from authentication.models import User
 import datetime
 
 
-def sort_and_pagine(request, tickets, reviews):
-    if False:
-        for ticket in tickets:
-            if ticket.time_updated:
-                ticket.time_for_sort = ticket.time_updated
-            else:
-                ticket.time_for_sort = ticket.time_created
-        for review in reviews:
-            if review.time_updated:
-                review.time_for_sort = review.time_updated
-            else:
-                review.time_for_sort = review.time_created
+def annotate_sort_date(query_set):
+    return query_set.annotate(
+        time_for_sort=ExpressionWrapper(
+            Case(When(time_updated=None, then=F("time_created")), default=F("time_updated")),
+            output_field=DateTimeField(),
+        ),
+    )
 
+
+def sort_and_pagine(request, tickets, reviews):
+    tickets = annotate_sort_date(tickets)
+    reviews = annotate_sort_date(reviews)
     posts = sorted(chain(tickets, reviews), key=lambda instance: instance.time_for_sort, reverse=True)
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
@@ -56,13 +55,6 @@ def subscription_delete(request, id_subscription):
     return redirect("subscriptions")
 
 
-def display(objs, title):
-    print()
-    print("display", title)
-    for obj in objs:
-        print(obj.user, obj.title, obj.time_created, obj.time_updated)
-
-
 @login_required
 def flux_page(request):
 
@@ -71,59 +63,20 @@ def flux_page(request):
     followed_users = [user] + [user.followed_user for user in followed_users]
 
     # we retrieve all the tickets of the user and of the followed users
-    tickets = models.Ticket.objects.filter(user__in=followed_users).annotate(
+    # and inside we keep only the tickets without review
+    # or with review if the author of the ticket is not the one of the review
+    # we mark the ticket if there is or not a rewiew associated (to propose to create a review)
+    tickets = models.Ticket.objects.filter(
+        Q(user__in=followed_users) & (Q(review__isnull=True) | ~Q(review__user=F("user")))
+    ).annotate(
         ticket_with_review=ExpressionWrapper(
             Case(When(Q(review__isnull=False), then=True), default=False),
             output_field=BooleanField(),
         ),
-        time_for_sort=ExpressionWrapper(
-            Case(When(time_updated=None, then=F("time_created")), default=F("time_updated")),
-            output_field=DateTimeField(),
-        ),
     )
 
-    # we keep only the tickets without review or with review if the author of the ticket is not the one of the review
-    tickets = [
-        ticket
-        for ticket in tickets
-        if ticket.review_set.all().count() == 0
-        or (ticket.review_set.all().count() == 1 and ticket.user != ticket.review_set.all()[0].user)
-    ]
-    # we mark the ticket if there is or not a rewiew associated (to propose to create a review)
-    if False:
-        for ticket in tickets:
-            if ticket.review_set.all().count() == 1:
-                ticket.ticket_with_review = True
-                ticket.save(old_image=ticket.image)
-
-    display(tickets, "old tickets")
-    essai = models.Ticket.objects.filter(
-        Q(user__in=followed_users) & (Q(review__isnull=True) | ~Q(review__user=F("user")))
-    )
-    # for ticket in models.Ticket.objects.filter(Q(user__in=followed_users)):
-    # print(ticket.review_set.all()[0].ticket.id)
-
-    display(essai, "new tickets")
-
-    display(models.Ticket.objects.all(), "all tickets")
-    # we retrieve all the reviews of the user and of the followed users
-    reviews = models.Review.objects.all()
-    reviews = reviews.annotate(
-        time_for_sort=ExpressionWrapper(
-            Case(When(time_updated=None, then=F("time_created")), default=F("time_updated")),
-            output_field=DateTimeField(),
-        )
-    )
-
-    reviews = [review for review in reviews if review.user in followed_users or (review.ticket.user == user)]
-
-    # display(reviews, "old review")
-
-    ####essai request review
-    essai = models.Review.objects.filter(Q(user__in=followed_users) | Q(ticket__user=user))
-
-    # display(essai, "new review")
-    # display(models.Review.objects.all(), "all review")
+    # we retrieve all the reviews of the user ,of the followed users and of another user if it's your ticket
+    reviews = models.Review.objects.filter(Q(user__in=followed_users) | Q(ticket__user=user))
 
     context = sort_and_pagine(request, tickets, reviews)
 
@@ -135,18 +88,7 @@ def posts(request):
     user = request.user
     tickets = models.Ticket.objects.filter(user=user)
     reviews = models.Review.objects.filter(user=user)
-    tickets = tickets.annotate(
-        time_for_sort=ExpressionWrapper(
-            Case(When(time_updated=None, then=F("time_created")), default=F("time_updated")),
-            output_field=DateTimeField(),
-        )
-    )
-    reviews = reviews.annotate(
-        time_for_sort=ExpressionWrapper(
-            Case(When(time_updated=None, then=F("time_created")), default=F("time_updated")),
-            output_field=DateTimeField(),
-        )
-    )
+
     context = sort_and_pagine(request, tickets, reviews)
     return render(request, "flux/posts.html", context=context)
 
