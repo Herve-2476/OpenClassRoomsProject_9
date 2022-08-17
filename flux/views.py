@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from itertools import chain
-from django.db.models import Value, BooleanField, F, Q, When, Exists, Case, ExpressionWrapper, DateTimeField, Count
+from django.db.models import BooleanField, F, Q, When, Case, ExpressionWrapper, DateTimeField
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required

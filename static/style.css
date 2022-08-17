@@ -2,11 +2,6 @@
     float: right;
 }
 
-.L {
-    display: inline-block;
-    padding-right: 1em;
-    background-color: #f00;
-}
 
 #div_id_rating>div {
     display: inline-flex;
