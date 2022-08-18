@@ -15,12 +15,12 @@ This project aims to develop a web application. This application allows you to r
 
 * venv\Scripts\activate.bat *# to launch your environment under windows*
 
-* pip install -r requirements.txt
+* pip install -r requirements.txt # or *pip3 install -r requirements.txt*
 
 
 ## Running the program
 
-* python manage.py runserver 
+* python manage.py runserver # or *python3 manage.py runserver* 
 
 ## Use of the program
 
