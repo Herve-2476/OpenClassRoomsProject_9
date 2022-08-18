@@ -137,6 +137,6 @@ LOGOUT_REDIRECT_URL = "login"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR.joinpath("media/")
 
-locale.setlocale(locale.LC_ALL, "fr_fr")
+locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
