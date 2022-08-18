@@ -6,11 +6,11 @@
         <form method="post">            
             {% csrf_token %}
             <div class="row">
-                <div class="col-9 col-lg-10"> 
-                <p > {{form}} </p>
+                <div class="col-8 col-lm-9 col-lg-10 "> 
+                    <p > {{form}} </p>
                 </div>
-                <div class="col-3 col-lg-2 text-center align-self-end">
-                    <input  class="btn btn-dark w-75 ml-2" type="submit" value="Envoyer"></p>
+                <div class="col-4 col-lm-3 col-lg-2 pl-3 text-center ">
+                    <input  class="btn btn-dark w-95" type="submit" value="Envoyer"></p>
                 </div>
             </div>
         </form> 
@@ -23,11 +23,11 @@
                 {% csrf_token %}
                 {% for followed_user in followed_users %}
                 <div class="row">
-                    <div class="col-9 col-lg-10 bg-white border">
+                    <div class="col-8  col-lm-9 col-lg-10 bg-white border">
                         <p>{{ followed_user.followed_user }}</p>
                     </div>
-                    <div class="col-3 col-lg-2 text-center">
-                        <a class="btn btn-dark"
+                    <div class="col-4  col-lm-3 col-lg-2 text-center">
+                        <a class="btn btn-dark w-100"
                                 href="{% url 'subscription_delete' followed_user.id %}">Désabonner</a>
                     </div>
                 </div>
