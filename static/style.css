@@ -29,16 +29,6 @@ img {
     padding: 0;
 }
 
-.entry_field {
-    width: 75%;
-    height: 35px;
-    margin-left: 25px;
-    margin-right: 5px;
-    border: none;
-    background-color: #f00;
-
-}
-
 ::placeholder {
     text-align: center
 }
@@ -48,6 +38,15 @@ img {
     display: none;
 }
 
-.w-90 {
+.entry_field {
+    width: 75%;
+    height: 35px;
+    margin-left: 25px;
+    margin-right: 5px;
+    border: none;
+
+}
+
+.w-95 {
     width: 95%;
 }
