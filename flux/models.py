@@ -14,18 +14,16 @@ class Ticket(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
     time_updated = models.DateTimeField(null=True)
 
-    IMAGE_MAX_SIZE = (800, 800)
+    IMAGE_MAX_SIZE = (200, 200)
 
     def resize_image(self):
-        with Image.open(self.image) as image:
-            image.thumbnail(self.IMAGE_MAX_SIZE)
-            image.save(self.image.path)
+
+        image = Image.open(self.image.path)
+        image.thumbnail(self.IMAGE_MAX_SIZE)
+        image.save(self.image.path)
 
     def delete_image(self, old_image):
-        try:
-            os.remove(str(BASE_DIR) + str(old_image.url))
-        except:
-            print("effacement de l'image impossible")
+        os.remove(str(BASE_DIR) + str(old_image.url))
 
     def save(self, *args, **kwargs):
         old_image = kwargs.pop("old_image", False)
@@ -33,16 +31,16 @@ class Ticket(models.Model):
 
         # we delete old image and resize new image if changes
         if old_image != self.image:
-            if old_image:
-                self.delete_image(old_image)
             if self.image:
                 self.resize_image()
+            if old_image:
+                self.delete_image(old_image)
 
     def delete(self, *args, **kwargs):
         old_image = kwargs.pop("old_image")
+        super().delete(*args, **kwargs)
         if old_image:
             self.delete_image(old_image)
-        super().delete(*args, **kwargs)
 
 
 class Review(models.Model):
