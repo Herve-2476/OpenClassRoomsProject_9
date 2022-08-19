@@ -34,7 +34,9 @@ img {
 }
 
 #div_id_username label,
-#div_id_password label {
+#div_id_password label,
+#div_id_password1 label,
+#div_id_password2 label {
     display: none;
 }
 

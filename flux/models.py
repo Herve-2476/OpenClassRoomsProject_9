@@ -52,7 +52,7 @@ class Review(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(5)],
     )
 
-    body = models.CharField(verbose_name="", max_length=8192, blank=True)
+    body = models.CharField(verbose_name="Commentaire", max_length=8192, blank=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     time_updated = models.DateTimeField(null=True)
