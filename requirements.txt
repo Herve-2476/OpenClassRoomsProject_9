@@ -4,3 +4,4 @@ flake8
 flake8-html
 django-crispy-forms
 pytz
+crispy-bootstrap4
